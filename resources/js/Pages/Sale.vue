@@ -5,38 +5,39 @@ import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000/api';
-const sellers = ref([]);
+const sales = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
 onMounted(() => {
-  getSellers();
+  getSales();
 });
 
-const getSellers = async () => {
+const getSales = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/sellers`);
-    sellers.value = response.data;
+    const response = await axios.get(`${API_BASE_URL}/sales`);
+    sales.value = response.data;
+    console.log(response.data);
   } catch (error) {
-    console.error('Error fetching sellers:', error);
+    console.error('Error fetching sales:', error);
   }
 };
 
-const paginatedSellers = computed(() => {
-  if (!Array.isArray(sellers.value.data)) {
+const paginatedSales = computed(() => {
+  if (!Array.isArray(sales.value.data)) {
     return [];
   }
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return sellers.value.data.slice(start, end);
+  return sales.value.data.slice(start, end);
 });
 
 const pageCount = computed(() => {
-  if (!Array.isArray(sellers.value.data)) {
+  if (!Array.isArray(sales.value.data)) {
     return 0;
   }
 
-  return Math.ceil(sellers.value.data.length / itemsPerPage);
+  return Math.ceil(sales.value.data.length / itemsPerPage);
 });
 
 const nextPage = () => {
@@ -70,59 +71,61 @@ const paginationPages = computed(() => {
 
 const filter = ref('');
 
-const filterSellers = () => {
+const filterSales = () => {
     if (filter.value.trim() === '') {
-        getSellers();
+        getSales();
         return;
     }
 
-  const filteredSellers = sellers.value.data.filter((seller) => {
+  const filteredSales = sales.value.data.filter((sale) => {
     const searchTerm = filter.value.toLowerCase();
     return (
-      seller.name.toLowerCase().includes(searchTerm) ||
-      seller.email.toLowerCase().includes(searchTerm)
+      sale.seller_id.toString().includes(searchTerm) ||
+      sale.value.toString().includes(searchTerm) ||
+      sale.commission.toString().includes(searchTerm) ||
+      sale.sale_date.toString().includes(searchTerm)
     );
   });
-  sellers.value.data = filteredSellers;
+  sales.value.data = filteredSales;
   currentPage.value = 1;
 };
 
-const viewSeller = async (seller) => {
+const viewSale = async (sale) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/sellers/${seller.id}`);
-        window.location.href = `/sellers/${seller.id}`;
+        const response = await axios.get(`${API_BASE_URL}/sales/${sale.id}`);
+        window.location.href = `/sales/${sale.id}`;
     } catch (error) {
-        console.error('Error fetching seller:', error);
+        console.error('Error fetching sale:', error);
     }
 };
 
-const newSeller = async () => {
+const newSale = async () => {
     try {
-        window.location.href = `/newSellers`;
+        window.location.href = `/newSales`;
     } catch (error) {
-        console.error('Error fetching seller:', error);
+        console.error('Error fetching sale:', error);
     }
 };
 
-const editSeller = async (seller) => {
+const editSale = async (sale) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/sellers/${seller.id}`);
-        window.location.href = `/editSellers/${seller.id}`;
+        const response = await axios.get(`${API_BASE_URL}/sales/${sale.id}`);
+        window.location.href = `/editSales/${sale.id}`;
     } catch (error) {
-        console.error('Error fetching seller:', error);
+        console.error('Error fetching sale:', error);
     }
 };
 
 const notification = ref(null);
 
-const deleteSeller = async (sellerId) => {
+const deleteSale = async (saleId) => {
     try {
-        await axios.delete(`${API_BASE_URL}/sellers/${sellerId}`);
-        notification.value = { type: 'success', message: 'Seller deleted successfully' };
-        getSellers();
+        await axios.delete(`${API_BASE_URL}/sales/${saleId}`);
+        notification.value = { type: 'success', message: 'Sale deleted successfully' };
+        getSales();
     } catch (error) {
-        console.error('Error deleting seller:', error);
-        notification.value = { type: 'error', message: 'Failed to delete seller' };
+        console.error('Error deleting sale:', error);
+        notification.value = { type: 'error', message: 'Failed to delete sale' };
     }
 };
 
@@ -137,11 +140,11 @@ watch(notification, (newVal) => {
 </script>
 
 <template>
-  <Head title="Sellers" />
+  <Head title="Sales" />
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Sellers</h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Sales</h2>
     </template>
     <div v-if="notification" :class="['notification', notification.type]">
       {{ notification.message }}
@@ -151,26 +154,30 @@ watch(notification, (newVal) => {
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6 text-gray-900">
-            <input type="text" v-model="filter" @input="filterSellers" placeholder="Search..." class="mb-4 p-2 border border-gray-300 rounded-md" />
-            <button @click="newSeller()" class="ml-4 btn-create-seller">New Seller</button>
+            <input type="text" v-model="filter" @input="filterSales" placeholder="Search..." class="mb-4 p-2 border border-gray-300 rounded-md" />
+            <button @click="newSale()" class="ml-4 btn-create-sale">New Sale</button>
 
             <div class="overflow-x-auto">
                 <table class="table-auto w-full">
                     <thead>
                         <tr>
                         <th class="px-4 py-2">ID</th>
-                        <th class="px-4 py-2">Name</th>
-                        <th class="px-4 py-2">Email</th>
+                        <th class="px-4 py-2">Seller ID</th>
+                        <th class="px-4 py-2">Value</th>
+                        <th class="px-4 py-2">Commission</th>
+                        <th class="px-4 py-2">Sale Date</th>
                         <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="seller in paginatedSellers" :key="seller.id">
-                            <td class="border px-4 py-2">{{ seller.id }}</td>
-                            <td class="border px-4 py-2">{{ seller.name }}</td>
-                            <td class="border px-4 py-2">{{ seller.email }}</td>
+                        <tr v-for="sale in paginatedSales" :key="sale.id">
+                            <td class="border px-4 py-2">{{ sale.id }}</td>
+                            <td class="border px-4 py-2">{{ sale.seller_id }}</td>
+                            <td class="border px-4 py-2">{{ sale.value }}</td>
+                            <td class="border px-4 py-2">{{ sale.commission }}</td>
+                            <td class="border px-4 py-2">{{ sale.sale_date }}</td>
                             <td class="border px-4 py-2">
-                                <button @click="viewSeller(seller)" class="text-indigo-600 hover:text-indigo-900">
+                                <button @click="viewSale(sale)" class="text-indigo-600 hover:text-indigo-900">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -178,14 +185,14 @@ watch(notification, (newVal) => {
                                     View
                                 </button>
                                 <span class="mx-2"></span>
-                                <button @click="editSeller(seller)" class="text-blue-600 hover:text-blue-900">
+                                <button @click="editSale(sale)" class="text-blue-600 hover:text-blue-900">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                     </svg>
                                     Edit
                                 </button>
                                 <span class="mx-2"></span>
-                                <button @click="deleteSeller(seller.id)" class="text-red-600 hover:text-red-900">
+                                <button @click="deleteSale(sale.id)" class="text-red-600 hover:text-red-900">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                     </svg>
@@ -272,7 +279,7 @@ watch(notification, (newVal) => {
   opacity: 0;
 }
 
-.btn-create-seller {
+.btn-create-sale {
   display: inline-block;
   padding: 10px 20px;
   background-color: #007bff;
@@ -282,7 +289,7 @@ watch(notification, (newVal) => {
   transition: background-color 0.3s ease;
 }
 
-.btn-create-seller:hover {
+.btn-create-sale:hover {
   background-color: #0056b3;
 }
 </style>

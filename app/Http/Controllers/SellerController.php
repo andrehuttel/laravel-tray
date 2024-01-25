@@ -50,6 +50,11 @@ class SellerController extends Controller
         ]);
     }
 
+    public function newSeller()
+    {
+        return Inertia::render('NewSeller');
+    }
+    
     public function editSeller($id)
     {
         $seller = Seller::findOrFail($id);

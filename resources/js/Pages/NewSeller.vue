@@ -8,32 +8,23 @@ const props = defineProps({
     seller: {
         type: Object,
         required: true,
-    },
-    onSuccess: {
-        type: Function,
-        required: true,
-    },
-    onCancel: {
-        type: Function,
-        required: true,
     }
 });
 
-const editedSeller = ref({ ...props.seller });
+const createdSeller = ref({ ...props.seller });
 const API_BASE_URL = 'http://localhost:8000/api';
-const updateSeller = async () => {
+const createSeller = async () => {
     try {
-        await axios.put(`${API_BASE_URL}/sellers/${editedSeller.value.id}`, editedSeller.value);
+        await axios.post(`${API_BASE_URL}/sellers`, createdSeller.value);
         window.location.href = `/sellers`;
     } catch (error) {
-        console.error('Error updating seller:', error);
+        console.error('Error creating seller:', error);
     }
 };
 
 const goBack = () => {
   window.history.back();
 };
-
 </script>
 
 <template>
@@ -41,20 +32,20 @@ const goBack = () => {
   
     <AuthenticatedLayout>
       <template #header>
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Seller</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">New Seller</h2>
       </template>
   
       <div class="py-12">
           <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
               <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                  <form @submit.prevent="updateSeller" class="space-y-6">
+                  <form @submit.prevent="createSeller" class="space-y-6">
                       <div>
                           <label for="name" class="block font-medium text-gray-700">Name:</label>
-                          <input type="text" id="name" v-model="editedSeller.name" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                          <input type="text" id="name" v-model="createdSeller.name" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                       </div>
                       <div>
                           <label for="email" class="block font-medium text-gray-700">Email:</label>
-                          <input type="email" id="email" v-model="editedSeller.email" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                          <input type="text" step="any" id="email" v-model="createdSeller.email" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                       </div>
                       <div class="flex justify-end">
                           <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

@@ -34,8 +34,17 @@ Route::get('/dashboard', function () {
 Route::get('/sellers', function () {
     return Inertia::render('Seller');
 })->middleware(['auth', 'verified'])->name('sellers');
+
+Route::get('/sales', function () {
+    return Inertia::render('Sale');
+})->middleware(['auth', 'verified'])->name('sales');
+
 Route::get('/sellers/{id}', [SellerController::class, 'viewSeller'])->name('sellers.viewSeller');
+Route::get('/newSellers', [SellerController::class, 'newSeller'])->name('sellers.newSeller');
 Route::get('/editSellers/{id}', [SellerController::class, 'editSeller'])->name('sellers.editSeller');
+Route::get('/sales/{id}', [SaleController::class, 'viewSale'])->name('sales.viewSale');
+Route::get('/newSales', [SaleController::class, 'newSale'])->name('sales.newSale');
+Route::get('/editSales/{id}', [SaleController::class, 'editSale'])->name('sales.editSale');
 
 Route::get('/sales', function () {
     return Inertia::render('Sale');

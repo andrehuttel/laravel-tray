@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Http\Requests\SaleRequest;
 use App\Http\Resources\SaleResource;
+use Inertia\Inertia;
 
 class SaleController extends Controller
 {
@@ -50,5 +51,26 @@ class SaleController extends Controller
     {
         $sales = Sale::where('seller_id', $seller_id)->get();
         return SaleResource::collection($sales);
+    }
+
+    public function viewSale($id)
+    {
+        $sale = Sale::findOrFail($id);
+        return Inertia::render('ViewSale', [
+            'sale' => $sale
+        ]);
+    }
+
+    public function newSale()
+    {
+        return Inertia::render('NewSale');
+    }
+
+    public function editSale($id)
+    {
+        $sale = Sale::findOrFail($id);
+        return Inertia::render('EditSale', [
+            'sale' => $sale
+        ]);
     }
 }
