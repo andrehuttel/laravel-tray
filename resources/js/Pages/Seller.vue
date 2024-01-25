@@ -3,6 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
+import { router } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 const sellers = ref([]);
@@ -12,6 +14,10 @@ const itemsPerPage = 10;
 onMounted(() => {
   getSellers();
 });
+
+const page = usePage()
+
+const user = computed(() => page.props.auth.user)
 
 const getSellers = async () => {
   try {
@@ -126,6 +132,17 @@ const deleteSeller = async (sellerId) => {
     }
 };
 
+
+const sendSellerSummaryEmail = async (seller) => {
+  try {
+    router.post(`/sellers/send-summary-email/${seller}`);
+    notification.value = { type: 'success', message: 'Commission email resent successfully' };
+  } catch (error) {
+    console.error('Error resending commission email:', error);
+    notification.value = { type: 'error', message: 'Failed to resend commission email' };
+  }
+};
+
 watch(notification, (newVal) => {
     if (newVal) {
         setTimeout(() => {
@@ -190,6 +207,12 @@ watch(notification, (newVal) => {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                     </svg>
                                     Delete
+                                </button>
+                                <button v-if="user.is_admin" @click="sendSellerSummaryEmail(seller.id)" class="ml-2 text-red-600 hover:text-red-900">
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                                  </svg>
+                                    Send Email
                                 </button>
                             </td>
                         </tr>

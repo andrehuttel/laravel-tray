@@ -45,6 +45,7 @@ Route::get('/editSellers/{id}', [SellerController::class, 'editSeller'])->name('
 Route::get('/sales/{id}', [SaleController::class, 'viewSale'])->name('sales.viewSale');
 Route::get('/newSales', [SaleController::class, 'newSale'])->name('sales.newSale');
 Route::get('/editSales/{id}', [SaleController::class, 'editSale'])->name('sales.editSale');
+Route::post('/sellers/send-summary-email/{seller}', [SellerController::class, 'sendSellerSummaryEmail'])->name('sellers.send-summary-email');
 
 Route::get('/sales', function () {
     return Inertia::render('Sale');

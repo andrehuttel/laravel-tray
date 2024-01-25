@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Seller;
+use App\Models\Sale;
 use App\Http\Requests\SellerRequest;
 use App\Http\Resources\SellerResource;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DailySalesReport;
 
 class SellerController extends Controller
 {
@@ -61,5 +64,24 @@ class SellerController extends Controller
         return Inertia::render('EditSeller', [
             'seller' => $seller
         ]);
+    }
+
+    public function sendSellerSummaryEmail($id)
+    {
+        try {
+            $seller = Seller::findOrFail($id);
+
+            $sales = Sale::where('seller_id', $seller->id)
+                ->whereDate('created_at', today())
+                ->get();
+
+            $totalSales = $sales->count();
+            $totalValue = $sales->sum('value');
+            $totalCommission = $sales->sum('commission');
+
+            Mail::to($seller->email)->send(new DailySalesReport($seller, $totalSales, $totalValue, $totalCommission));
+        } catch (\Exception $th) {
+            throw $th;
+        }
     }
 }
