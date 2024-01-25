@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Seller;
 use App\Http\Requests\SellerRequest;
 use App\Http\Resources\SellerResource;
+use Inertia\Inertia;
 
 class SellerController extends Controller
 {
@@ -39,5 +40,21 @@ class SellerController extends Controller
         $seller = Seller::findOrFail($id);
         $seller->delete();
         return response()->json(['message' => 'Deleted successfully'], 200);
+    }
+
+    public function viewSeller($id)
+    {
+        $seller = Seller::findOrFail($id);
+        return Inertia::render('ViewSeller', [
+            'seller' => $seller
+        ]);
+    }
+
+    public function editSeller($id)
+    {
+        $seller = Seller::findOrFail($id);
+        return Inertia::render('EditSeller', [
+            'seller' => $seller
+        ]);
     }
 }

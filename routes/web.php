@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SellerController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,6 +30,16 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/sellers', function () {
+    return Inertia::render('Seller');
+})->middleware(['auth', 'verified'])->name('sellers');
+Route::get('/sellers/{id}', [SellerController::class, 'viewSeller'])->name('sellers.viewSeller');
+Route::get('/editSellers/{id}', [SellerController::class, 'editSeller'])->name('sellers.editSeller');
+
+Route::get('/sales', function () {
+    return Inertia::render('Sale');
+})->middleware(['auth', 'verified'])->name('sales');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
