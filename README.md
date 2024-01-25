@@ -1,3 +1,43 @@
+## Instalação
+```sh
+git clone https://github.com/andrehuttel/laravel-tray.git
+```
+
+```sh
+
+./vendor/bin/sail up -d
+```
+
+```sh
+./vendor/bin/sail bash
+```
+
+```sh
+composer install
+```
+
+
+Run this command to generate key
+```sh
+php artisan key:generate
+```
+
+```sh
+This project aims to enhance code quality and maintainability by implementing the following improvements:
+```
+
+```sh
+Abstraction of Logic into Service Layer
+```
+
+```sh
+Type Annotations for Methods
+```
+
+```sh
+Documentation with Docblocks
+```
+
 ## API Endpoints
 
 ### Sellers
