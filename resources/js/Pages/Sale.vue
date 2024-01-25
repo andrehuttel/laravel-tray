@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost/api';
 const sales = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;

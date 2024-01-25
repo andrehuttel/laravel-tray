@@ -6,7 +6,7 @@ import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost/api';
 const sellers = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;

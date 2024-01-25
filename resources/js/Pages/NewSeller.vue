@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const createdSeller = ref({ ...props.seller });
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost/api';
 const createSeller = async () => {
     try {
         await axios.post(`${API_BASE_URL}/sellers`, createdSeller.value);

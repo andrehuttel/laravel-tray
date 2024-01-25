@@ -20,7 +20,7 @@ const props = defineProps({
 });
 
 const editedSeller = ref({ ...props.seller });
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost/api';
 const updateSeller = async () => {
     try {
         await axios.put(`${API_BASE_URL}/sellers/${editedSeller.value.id}`, editedSeller.value);
